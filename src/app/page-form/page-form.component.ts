@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
+import * as filesaver from 'file-saver';
+import {saveAs} from 'file-saver';
 
 @Component({
   selector: 'app-page-form',
@@ -86,6 +88,11 @@ export class PageFormComponent {
   ];
 
   constructor(private fb: FormBuilder) {}
+
+  save() {
+    const f = filesaver;
+    
+  }
 
   onSubmit() {
     alert('Thanks!');
