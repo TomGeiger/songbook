@@ -1,7 +1,9 @@
 import { Component } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
-import * as filesaver from 'file-saver';
-import {saveAs} from 'file-saver';
+import * as FileSaver from 'file-saver';
+// import {saveAs} from 'file-saver';
+
+import { saveAs } from 'file-saver';
 
 @Component({
   selector: 'app-page-form',
@@ -90,11 +92,53 @@ export class PageFormComponent {
   constructor(private fb: FormBuilder) {}
 
   save() {
-    const f = filesaver;
-    
+    const formValue = this.addressForm.value;
+    const formValues = [formValue];
+    const stringvalues = JSON.stringify(formValues);
+    const data = this.convertToCSV2(formValues);
+
+  //  var blob = new Blob([data], {type: "text/plain;charset=utf-8"});
+  //   FileSaver.saveAs(blob, "hello world.txt");    
+
+
+    let blob = new Blob([data], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-16le"
+    });
+    FileSaver.saveAs(blob, "export.xls"); 
+
   }
 
-  onSubmit() {
+  convertToCSV(jsonData) {
+    var json = jsonData;
+    var fields = Object.keys(json[0])
+    console.log([jsonData, fields]);
+    var replacer = function(key, value) { return value === null ? '' : value } 
+    var csv = json.map(function(row){
+      return fields.map(function(fieldName){
+        return JSON.stringify(row[fieldName], replacer)
+      }).join(',')
+    })
+    // csv.unshift(fields.join(',')) // add header column
+
+    console.log(csv.join('\r\n'))
+    return csv.join('\r\n');
+  }
+
+  convertToCSV2(data) {
+    const items = data;
+    const replacer = (key, value) => value === null ? '' : value // specify how you want to handle null values here
+    const header = Object.keys(items[0])
+    let csv = items.map(row => header.map(fieldName => JSON.stringify(row[fieldName], replacer)).join(','))
+    csv.unshift(header.join(','))
+    csv = csv.join('\r\n')
+
+    console.log(csv)
+    return csv;
+  }
+
+  onSubmit(data) {
+    this.save();
+    console.log(data, this.addressForm.value);
     alert('Thanks!');
   }
 }
